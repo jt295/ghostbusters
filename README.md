@@ -247,7 +247,7 @@ func main() {
 
 ```
 
-## Okay I have my logic for finding the ghost in a grid complete. now I want to build a visual interface... How do I do that?
+## Okay I have my logic for finding the ghost and now I want to build a visual interface... How do I do that?
 
 ### C Sharp - Windows forms
 
