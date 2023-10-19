@@ -1,4 +1,4 @@
-# ghostbusters
+# Ghostbusters
 
 ## How do I take input from the terminal?
 
