@@ -247,7 +247,7 @@ func main() {
 
 ```
 
-## Okay, now I want to build a visual interface... How do I do that?
+## Okay I have my logic for finding the ghost in a grid complete. now I want to build a visual interface... How do I do that?
 
 ### C Sharp - Windows forms
 
@@ -313,19 +313,352 @@ class Program
 
 #### Vanilla, using the Dojo starter
 
-We need to create an .html file and include a javascript file inside it:
+We need to create an .html file and include a javascript file inside it.
+Add these to your dojo starting code.
+You can either open the html file in the browser, or serve it with VS code with [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
+
+##### index.html
 
 ```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ghostbusters!</title>
+    <style>
+      main {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 2rem;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+      }
+
+      p {
+        padding: 0.75rem;
+      }
+
+      .flex {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      #root {
+        display: grid;
+      }
+
+      .grid-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid white;
+        cursor: pointer;
+        transition: border 0.2s ease-out;
+      }
+
+      .grid-item:hover {
+        border: 2px solid blue;
+      }
+    </style>
+    <script src="./BrowserBusinessLogic.js"></script>
+  </head>
+  <body>
+    <main>
+      <div class="flex">
+        <img
+          src="https://1000logos.net/wp-content/uploads/2023/01/Ghostbusters-Logo-1984.png"
+          alt="Ghostbusters"
+          sizes="(max-width: 600px) 200px, 50vw"
+          width="200px"
+        />
+        <h1>Ghostbusters!</h1>
+      </div>
+
+      <p>Click a tile on the grid</p>
+
+      <div id="root"></div>
+    </main>
+  </body>
+</html>
 
 ```
 
+##### BrowserBusinessLogic.js
+
 ```js
+// Wait for all of the page content to load before running this
+document.addEventListener("DOMContentLoaded", () => {
+  // Get our 'root' div
+  const root = document.querySelector("#root");
+
+  const gridSize = 5;
+  root.setAttribute("data-size", gridSize);
+  root.style.gridTemplateColumns = `repeat(${gridSize}, 120px)`;
+  root.style.gridTemplateRows = `repeat(${gridSize}, 50px)`;
+
+  // Create a square grid of size gridSize
+  for (let y = gridSize - 1; y >= 0; y--) {
+    for (let x = 0; x < gridSize; x++) {
+      const gridItem = document.createElement("div");
+      gridItem.setAttribute("data-y", y);
+      gridItem.setAttribute("data-x", x);
+      gridItem.classList.add("grid-item");
+      gridItem.innerText = `Coords x:${x}, y:${y}`;
+      gridItem.addEventListener("click", () => {
+        console.log(
+          "You have just clicked a grid item with coords",
+          `x:${x}, y:${y}`
+        );
+        // You could add logic here for the guessing game
+        // Take these x and y coords and use them as a guess for the game!
+      });
+      // Add this grid to our root div
+      root.appendChild(gridItem);
+    }
+  }
+
+  // This is similar to what React code does under the hood
+  // Each item in JSX is actually a function that creates an element on the page!
+});
 
 ```
 
 #### Vanilla, using Vite
 
+[Vite](https://vitejs.dev/) is a JS build too which can help you get up and running very quickly.
+It also uses ESM (import stuff from './place') rather than ES5 (require).
+
+```bash
+npm create vite@latest ghostbusters -- --template vanilla
+```
+
+This command will scaffold an initial JS project which you can extend.
+
+Here is a similar starting point to the vanilla project, but with this as the 'main.js' file:
+
+main.js
+```js
+import "./style.css";
+
+document.querySelector("#app").innerHTML = `
+    <div class="flex">
+      <img
+        src="https://1000logos.net/wp-content/uploads/2023/01/Ghostbusters-Logo-1984.png"
+        alt="Ghostbusters"
+        sizes="(max-width: 600px) 200px, 50vw"
+        width="200px"
+      />
+      <h1>Ghostbusters!</h1>
+    </div>
+
+    <p>Click a tile on the grid</p>
+`;
+
+const gridSize = 5;
+const grid = document.createElement("div");
+grid.setAttribute("data-size", gridSize);
+grid.style.gridTemplateColumns = `repeat(${gridSize}, 120px)`;
+grid.style.gridTemplateRows = `repeat(${gridSize}, 50px)`;
+grid.classList.add("grid");
+
+// Create a square grid of size gridSize
+for (let y = gridSize - 1; y >= 0; y--) {
+  for (let x = 0; x < gridSize; x++) {
+    const gridItem = document.createElement("div");
+    gridItem.setAttribute("data-y", y);
+    gridItem.setAttribute("data-x", x);
+    gridItem.classList.add("grid-item");
+    gridItem.innerText = `Coords x:${x}, y:${y}`;
+    gridItem.addEventListener("click", () => {
+      console.log(
+        "You have just clicked a grid item with coords",
+        `x:${x}, y:${y}`
+      );
+      // You could add logic here for the guessing game
+      // Take these x and y coords and use them as a guess for the game!
+    });
+    // Add this grid to our root div
+    grid.appendChild(gridItem);
+  }
+}
+
+// Append the grid to the document
+document.querySelector("#app").appendChild(grid);
+
+```
+
+style.css
+```
+#app {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+    sans-serif;
+}
+
+p {
+  padding: 0.75rem;
+}
+
+.flex {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: border 0.2s ease-out;
+}
+
+.grid-item:hover {
+  border: 2px solid blue;
+}
+```
+
 #### React, using Vite
+
+[React](https://react.dev/learn) (often in conjunction with a [framework](https://nextjs.org/), for reasons [outlined here](https://nextjs.org/learn/foundations/about-nextjs/what-is-nextjs)). Is what most Frontend Engineers, using JavaScript, use to build user interfaces.
+
+Here is a similar starting point to the other two examples:
+
+App.jsx
+```jsx
+import './App.css'
+import { useState } from 'react';
+
+function App() {
+  return (
+    <main>
+      <div className="flex">
+        <img
+          src="https://1000logos.net/wp-content/uploads/2023/01/Ghostbusters-Logo-1984.png"
+          alt="Ghostbusters"
+          sizes="(max-width: 600px) 200px, 50vw"
+          width="200px"
+        />
+        <h1>Ghostbusters!</h1>
+      </div>
+
+      <p>Click a tile on the grid</p>
+      <Grid size={5} />
+    </main>
+  )
+}
+
+const GridItem = ({ onClick, isClicked, x, y }) => {
+  return (
+    <div
+      className={`grid-item ${isClicked ? 'clicked' : ''}`}
+      onClick={onClick}
+    >
+      Coords x:{x}, y:{y}
+    </div>
+  );
+};
+
+const Grid = ({ size }) => {
+  const [gridState, setGridState] = useState(Array(size * size).fill(false));
+
+  const handleGridItemClick = (index) => {
+    setGridState((prevGridState) => {
+      const newGridState = [...prevGridState];
+      newGridState[index] = !prevGridState[index];
+      return newGridState;
+    });
+
+    // You would add calls to logic functions about finding the ghost here
+  };
+
+  return (
+    <div className="grid" style={{ gridTemplateColumns: `repeat(${size}, 120px)`, gridTemplateRows: `repeat(${size}, 50px)` }}>
+      {Array.from({ length: size }).map((_, rowIndex) => (
+        <div className="row" key={rowIndex}>
+          {Array.from({ length: size }).map((_, colIndex) => {
+            const index = rowIndex * size + colIndex;
+            const x = rowIndex; 
+            const y = size - 1 - colIndex; 
+            return (
+              <GridItem
+                key={index}
+                onClick={() => {
+                  handleGridItemClick(index);
+                  console.log(`You have just clicked a grid item with coords x:${x}, y:${y}`)
+                }}
+                isClicked={gridState[index]}
+                x={x}
+                y={y}
+              />
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default App
+
+```
+
+App.css
+```
+main {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+    sans-serif;
+}
+
+p {
+  padding: 0.75rem;
+}
+
+.flex {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+
+.grid-item.clicked {
+  background-color: red;
+  color: white;
+}
+
+.grid-item:hover {
+  border: 2px solid blue;
+}
+```
+
+Delete everything inside index.css.
 
 ### Python - Tkinter
 
