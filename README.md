@@ -255,55 +255,51 @@ func main() {
 using System;
 using System.Windows.Forms;
 
-class Program
+namespace GhostbustersApp
 {
-    static void Main()
+    public partial class Form1 : Form
     {
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
-
-        Form form = new Form();
-        form.Text = "User Input Form";
-
-        Label nameLabel = new Label();
-        nameLabel.Text = "Enter your name:";
-        nameLabel.Location = new System.Drawing.Point(10, 10);
-        form.Controls.Add(nameLabel);
-
-        TextBox nameTextBox = new TextBox();
-        nameTextBox.Location = new System.Drawing.Point(150, 10);
-        form.Controls.Add(nameTextBox);
-
-        Label ageLabel = new Label();
-        ageLabel.Text = "Enter your age:";
-        ageLabel.Location = new System.Drawing.Point(10, 40);
-        form.Controls.Add(ageLabel);
-
-        TextBox ageTextBox = new TextBox();
-        ageTextBox.Location = new System.Drawing.Point(150, 40);
-        form.Controls.Add(ageTextBox);
-
-        Button submitButton = new Button();
-        submitButton.Text = "Submit";
-        submitButton.Location = new System.Drawing.Point(10, 70);
-        form.Controls.Add(submitButton);
-
-        submitButton.Click += (sender, e) =>
+        public Form1()
         {
-            string name = nameTextBox.Text;
-            int age;
-            if (int.TryParse(ageTextBox.Text, out age))
-            {
-                // Process the user input
-                MessageBox.Show($"Hello, {name}! You are {age} years old.");
-            }
-            else
-            {
-                MessageBox.Show("Invalid age input.");
-            }
-        };
+            InitializeComponent();
+            InitializeGrid();
+        }
 
-        Application.Run(form);
+        private void InitializeGrid()
+        {
+            int gridSize = 5;
+            tableLayoutPanel1.RowCount = gridSize;
+            tableLayoutPanel1.ColumnCount = gridSize;
+            tableLayoutPanel1.RowStyles.Clear();
+            tableLayoutPanel1.ColumnStyles.Clear();
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100 / gridSize));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100 / gridSize));
+
+            for (int y = gridSize - 1; y >= 0; y--)
+            {
+                for (int x = 0; x < gridSize; x++)
+                {
+                    Label gridItem = new Label();
+                    gridItem.Text = $"Coords x:{x}, y:{y}";
+                    gridItem.Dock = DockStyle.Fill;
+                    gridItem.TextAlign = ContentAlignment.MiddleCenter;
+                    gridItem.BorderStyle = BorderStyle.FixedSingle;
+                    gridItem.Click += (sender, e) => {
+                        MessageBox.Show($"You have just clicked a grid item with coords x:{x}, y:{y}");
+                        // Add your game logic here
+                    };
+                    tableLayoutPanel1.Controls.Add(gridItem);
+                }
+            }
+        }
+
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
+        }
     }
 }
 
@@ -665,41 +661,27 @@ Delete everything inside index.css.
 ```python
 import tkinter as tk
 
-def submit():
-    name = name_entry.get()
-    age = age_entry.get()
-    try:
-        age = int(age)
-        if age >= 0:
-            result_label.config(text=f"Hello, {name}! You are {age} years old.")
-        else:
-            result_label.config(text="Invalid age input.")
-    except ValueError:
-        result_label.config(text="Invalid age input.")
+def click_grid_item(x, y):
+    print(f"You have just clicked a grid item with coords x:{x}, y:{y}")
+    # Add your game logic here
 
-# Create the main window
 root = tk.Tk()
-root.title("User Input Form")
+root.title("Ghostbusters!")
+grid_size = 5
 
-# Name input
-name_label = tk.Label(root, text="Enter your name:")
-name_label.pack()
-name_entry = tk.Entry(root)
-name_entry.pack()
+root.geometry("800x400")
 
-# Age input
-age_label = tk.Label(root, text="Enter your age:")
-age_label.pack()
-age_entry = tk.Entry(root)
-age_entry.pack()
+root.grid_rowconfigure(0, weight=1)
+root.grid_columnconfigure(0, weight=1)
 
-# Submit button
-submit_button = tk.Button(root, text="Submit", command=submit)
-submit_button.pack()
+root_frame = tk.Frame(root)
+root_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-# Result label
-result_label = tk.Label(root, text="")
-result_label.pack()
+for y in range(grid_size):
+    for x in range(grid_size):
+        grid_item = tk.Label(root_frame, text=f"Coords x:{x}, y:{y}", relief="solid", borderwidth=2)
+        grid_item.grid(row=y, column=x, padx=10, pady=10)
+        grid_item.bind("<Button-1>", lambda event, x=x, y=y: click_grid_item(x, y))
 
 root.mainloop()
 
