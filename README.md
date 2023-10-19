@@ -436,6 +436,7 @@ This command will scaffold an initial JS project which you can extend.
 Here is a similar starting point to the vanilla project, but with this as the 'main.js' file:
 
 main.js
+
 ```js
 import "./style.css";
 
@@ -487,6 +488,7 @@ document.querySelector("#app").appendChild(grid);
 ```
 
 style.css
+
 ```
 #app {
   max-width: 1400px;
@@ -529,9 +531,14 @@ p {
 
 [React](https://react.dev/learn) (often in conjunction with a [framework](https://nextjs.org/), for reasons [outlined here](https://nextjs.org/learn/foundations/about-nextjs/what-is-nextjs)). Is what most Frontend Engineers, using JavaScript, use to build user interfaces.
 
-Here is a similar starting point to the other two examples:
+```bash
+npm create vite@latest ghostbusters -- --template react
+```
+
+Here is a similar starting point to the other examples:
 
 App.jsx
+
 ```jsx
 import './App.css'
 import { useState } from 'react';
@@ -611,6 +618,7 @@ export default App
 ```
 
 App.css
+
 ```
 main {
   max-width: 1400px;
@@ -655,6 +663,110 @@ p {
 ```
 
 Delete everything inside index.css.
+
+#### React, in Typescript :fire: :fire: :fire: with Vite
+
+```bash
+npm create vite@latest ghostbusters -- --template react-ts
+```
+
+App.tsx
+
+```tsx
+import "./App.css";
+import { useState } from "react";
+
+function App() {
+  return (
+    <main>
+      <div className="flex">
+        <img
+          src="https://1000logos.net/wp-content/uploads/2023/01/Ghostbusters-Logo-1984.png"
+          alt="Ghostbusters"
+          sizes="(max-width: 600px) 200px, 50vw"
+          width="200px"
+        />
+        <h1>Ghostbusters!</h1>
+      </div>
+
+      <p>Click a tile on the grid</p>
+      <Grid size={5} />
+    </main>
+  );
+}
+
+const GridItem = ({
+  onClick,
+  isClicked,
+  x,
+  y,
+}: {
+  onClick: () => void;
+  isClicked: boolean;
+  x: number;
+  y: number;
+}) => {
+  return (
+    <div
+      className={`grid-item ${isClicked ? "clicked" : ""}`}
+      onClick={onClick}
+    >
+      Coords x:{x}, y:{y}
+    </div>
+  );
+};
+
+const Grid = ({ size }: { size: number }) => {
+  const [gridState, setGridState] = useState(Array(size * size).fill(false));
+
+  const handleGridItemClick = (index: number) => {
+    setGridState((prevGridState) => {
+      const newGridState = [...prevGridState];
+      newGridState[index] = !prevGridState[index];
+      return newGridState;
+    });
+
+    // You would add calls to logic functions about finding the ghost here
+  };
+
+  return (
+    <div
+      className="grid"
+      style={{
+        gridTemplateColumns: `repeat(${size}, 120px)`,
+        gridTemplateRows: `repeat(${size}, 50px)`,
+      }}
+    >
+      {Array.from({ length: size }).map((_, rowIndex) => (
+        <div className="row" key={rowIndex}>
+          {Array.from({ length: size }).map((_, colIndex) => {
+            const index = rowIndex * size + colIndex;
+            const x = rowIndex;
+            const y = size - 1 - colIndex;
+            return (
+              <GridItem
+                key={index}
+                onClick={() => {
+                  handleGridItemClick(index);
+                  console.log(
+                    `You have just clicked a grid item with coords x:${x}, y:${y}`
+                  );
+                }}
+                isClicked={gridState[index]}
+                x={x}
+                y={y}
+              />
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default App;
+
+```
 
 ### Python - Tkinter
 
